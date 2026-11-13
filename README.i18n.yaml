@@ -5,6 +5,9 @@
 /deepseek-harness:
   en: f68c4f080ce55ff2
   zh: 88a76d7f7f0b260e
+/deepseek-harness/fork-maintenance:
+  en: 43c66e95f8588cae
+  zh: 087a8325ea2a80a7
 /deepseek-harness/developer-preview:
   en: 4ef4d8a71ac143f0
   zh: 1bfc3149ba8e5543
@@ -24,8 +27,8 @@
   en: cabc2d3e9f8898bd
   zh: 83b6d238bae29ce3
 /deepseek-harness/development:
-  en: 803ca2b11b497bed
-  zh: 8b4071eb0e7783ef
+  en: 59f186c9367e8fa0
+  zh: 5f01c708e2587f3b
 /deepseek-harness/citation:
   en: 6704e9e5a8d49a91
   zh: 85c9cdd8d56f8e9d

@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Harness · 本地工作台</title><link rel="stylesheet" href="/setup.css"><script src="/setup.js" defer></script></head>
+<body><main>
+  <header><span class="mark">H</span><div><p class="eyebrow">MYCODEX · WINDOWS</p><h1>Harness 插件工作台</h1></div><span id="badge">正在连接</span></header>
+  <section class="intro"><h2>接入 DeepSeek，开始本地工作</h2><p>原版 Harness 界面、上下文洞察和独立项目工作区。默认模型为 DeepSeek Flash，可在工作台中切换 Pro。</p></section>
+  <form id="setup"><label for="key">DeepSeek API Key <span id="saved"></span></label><input id="key" name="key" type="password" autocomplete="off" spellcheck="false" placeholder="在本机输入，保存后清空此输入框">
+    <label class="check"><input id="remember" type="checkbox" checked> 使用当前 Windows 用户加密记住 Key</label>
+    <label for="workspace">项目文件夹</label><input id="workspace" name="workspace" spellcheck="false" placeholder="C:\ChatGPT\myCodex-workspace" required>
+    <p class="hint" id="workspace-hint">可以指定一个已有项目，或填写新的文件夹路径。工作台会按你的任务，将获准读取的内容发送到 DeepSeek API。</p>
+    <div class="actions"><button id="connect" type="submit">保存并打开工作台</button><button id="open" type="button" class="secondary" hidden>打开正在运行的工作台</button></div>
+  </form>
+  <p id="message" role="status" hidden></p>
+  <footer><span>Key 由本机代理保管，Harness 使用临时本机令牌。</span><div><button id="stop" class="link" type="button" hidden>停止工作台</button><button id="forget" class="link" type="button" hidden>清除保存的 Key</button></div></footer>
+</main></body></html>

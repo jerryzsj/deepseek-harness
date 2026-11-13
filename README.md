@@ -8,6 +8,10 @@ It is built on an **everything-is-a-plugin** architecture and powered by [Cordis
 
 Documentation: [https://deepseek-harness.github.io/deepseek-harness/](https://deepseek-harness.github.io/deepseek-harness/)
 
+## Fork maintenance
+
+This fork is maintained in the private [Siemens Code project](https://code.siemens.com/senjing.zheng/myDeepSeek). The GitHub fork is retained as a snapshot and receives no further updates. Access to the maintained repository requires project authorization.
+
 ## Developer preview
 
 DeepSeek Harness is in _developer preview_ and iterating rapidly. **THERE WILL BE COMPATIBILITY-BREAKING CHANGES.**
@@ -31,8 +35,8 @@ The command starts the Web UI at `http://127.0.0.1:3080` by default and opens it
 To run from a repository checkout:
 
 ```sh
-git clone https://github.com/deepseek-ai/deepseek-harness.git
-cd deepseek-harness
+git clone git@code.siemens.com:senjing.zheng/myDeepSeek.git
+cd myDeepSeek
 pnpm install
 pnpm run build
 pnpm dsh web
@@ -55,6 +59,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 Start with the [development guide](docs/development.md) and [architecture documentation](docs/architecture.md).
 
 `pnpm run dev:web` builds, serves, and rebuilds client bundles on source edits in one terminal, and `make help` lists the matching Make targets for Web and Desktop; the guide's application commands section owns the full table.
+
+The local macOS launcher, loopback model relay, and setup page live under [workbench/](workbench/), with separately pinned runtime dependencies. Local reference checkouts, workbench state, credentials, logs, and native build outputs are not versioned.
 
 For agents, follow [AGENTS.md](AGENTS.md).
 

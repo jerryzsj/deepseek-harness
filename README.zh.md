@@ -8,6 +8,10 @@ DeepSeek Harness（`dsh`）是由 [DeepSeek AI](https://deepseek.com) 开发的�
 
 文档：[https://deepseek-harness.github.io/deepseek-harness/](https://deepseek-harness.github.io/deepseek-harness/)
 
+## Fork 维护
+
+本 fork 在 [Siemens Code 私有项目](https://code.siemens.com/senjing.zheng/myDeepSeek)中维护。GitHub fork 仅保留为快照，不再更新。访问持续维护的仓库需要项目授权。
+
 ## 开发者预览
 
 DeepSeek Harness 处于 _开发者预览_ 阶段，正在快速迭代。**未来将出现破坏兼容性的变更。**
@@ -35,8 +39,8 @@ npx @deepseek-ai/dsh web
 如需从仓库源码运行：
 
 ```sh
-git clone https://github.com/deepseek-ai/deepseek-harness.git
-cd deepseek-harness
+git clone git@code.siemens.com:senjing.zheng/myDeepSeek.git
+cd myDeepSeek
 pnpm install
 pnpm run build
 pnpm dsh web
@@ -74,6 +78,8 @@ pnpm dsh web
 请先阅读[开发指南](docs/development.zh.md)与[架构文档](docs/architecture.zh.md)。
 
 `pnpm run dev:web` 会在一个终端里完成构建、启动，并在源码修改时重建 client bundle；`make help` 列出 Web 与 Desktop 对应的 Make target。完整表格见开发指南的「应用命令」一节。
+
+本机 macOS 启动器、回环模型代理和设置页面位于 [workbench/](workbench/)，其运行时依赖单独锁定版本。本地参考仓库、工作台状态、凭据、日志和原生构建产物不纳入版本控制。
 
 面向 agent：请遵循 [AGENTS.md](AGENTS.md)。
 

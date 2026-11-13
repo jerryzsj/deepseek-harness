@@ -50,5 +50,11 @@ worktrees/
 .typert-*/
 native/system/test/bin/
 
+# Local reference checkouts and workbench runtime data.
+/reference/
+/workbench/.logs/
+/workbench/.state*/
+/workbench/native-mac/build/
+
 # Generated company-signed CUA release record.
 /packages/experimental/cua-macos/cua-helper.json
