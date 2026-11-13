@@ -90,6 +90,52 @@ async function loadComposition(): Promise<{ ctx: Context; settingsPath: string }
 }
 
 describe('llm-pi-ai real dormant composition', () => {
+  it('serves mixed model protocols through one provider and stored credential', async () => {
+    const item = { type: 'message', id: 'msg_reply', role: 'assistant', content: [
+      { type: 'output_text', text: 'hello', annotations: [] },
+    ] }
+    const server = await mockServer([
+      { events: textEvents },
+      { events: [
+        JSON.stringify({ type: 'response.created', response: { id: 'resp_reply' } }),
+        JSON.stringify({ type: 'response.output_item.added', output_index: 0, item }),
+        JSON.stringify({ type: 'response.output_item.done', output_index: 0, item }),
+        JSON.stringify({ type: 'response.completed', response: {
+          id: 'resp_reply', status: 'completed', output: [item],
+          usage: { input_tokens: 3, output_tokens: 1, total_tokens: 4 },
+        } }),
+      ] },
+      { events: textEvents },
+    ])
+    const { ctx, settingsPath } = await loadComposition()
+    await writeFile(settingsPath, [
+      '- id: llm-pi-ai', '  config:', '    providers:', '      gateway:',
+      '        apiKeyEnv: PI_COMPOSITION_KEY',
+      '        api: openai-completions',
+      `        baseURL: ${server.url}/v1`,
+      '        models:',
+      '          - id: chat',
+      '          - id: responses',
+      '            api: openai-responses',
+      '',
+    ].join('\n'))
+    await vi.waitFor(() => {
+      expect(ctx.llm.listProviders().map(provider => provider.id)).toEqual(['gateway'])
+    }, { timeout: 5000 })
+
+    expect((await ctx.llm.listModels('gateway')).map(model => model.id)).toEqual(['chat', 'responses'])
+    for (const model of ['chat', 'responses', 'chat']) {
+      const result = await assemble(ctx, { provider: 'gateway', model, messages: [], maxTokens: 32 })
+      expect(result.finish).toEqual({ kind: 'stop' })
+      expect(result.message.content).toEqual([{ type: 'text', text: 'hello' }])
+    }
+    expect(server.paths).toEqual(['/v1/chat/completions', '/v1/responses', '/v1/chat/completions'])
+    expect(server.requests[0]).toMatchObject({ model: 'chat', max_completion_tokens: 32 })
+    expect(server.requests[1]).toMatchObject({ model: 'responses', max_output_tokens: 32 })
+    expect(server.headers.map(headers => headers.authorization))
+      .toEqual(Array<string>(3).fill('Bearer key-from-store'))
+  })
+
   it('dispatches header contributors through the Loader-mounted adapter', async () => {
     const server = await mockServer([{ events: textEvents }])
     const { ctx, settingsPath } = await loadComposition()

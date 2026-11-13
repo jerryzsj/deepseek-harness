@@ -18,6 +18,28 @@ const routeWith = (profile: Record<string, unknown>): (() => unknown) =>
 const configWith = (model: Record<string, unknown>): (() => unknown) =>
   routeWith({ models: [{ id: 'm', ...model }] })
 
+describe('per-model wire protocol', () => {
+  it('resolves model protocols without requiring a route-wide default', () => {
+    const providers = {
+      gateway: {
+        baseURL: 'https://gateway.test/v1',
+        models: [
+          { id: 'chat', api: 'openai-completions' },
+          { id: 'responses', api: 'openai-responses' },
+        ],
+      },
+    }
+    Config({ providers })
+    const profiles = resolveProfiles(providers)
+    expect(profiles.get('gateway')?.piProvider?.getModels().map(model => model.api))
+      .toEqual(['openai-completions', 'openai-responses'])
+  })
+
+  it('rejects a model protocol whose authentication the profile cannot express', () => {
+    expect(configWith({ api: 'azure-openai-responses' })).toThrow()
+  })
+})
+
 describe('reasoning schema boundary', () => {
   it('accepts an empty provider section and propagates unexpected catalog failures', () => {
     expect(() => { assertServiceable({}) }).not.toThrow()

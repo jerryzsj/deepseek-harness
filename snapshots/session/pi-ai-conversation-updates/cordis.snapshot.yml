@@ -6,6 +6,10 @@
     providers:
       moonshotai:
         apiKeyEnv: MOONSHOT_API_KEY
+        api: openai-responses
+        modelOverrides:
+          kimi-k3:
+            api: openai-completions
 
 - insert:
     # Keep pi-ai model preparation; only the recorded response stream is substituted.

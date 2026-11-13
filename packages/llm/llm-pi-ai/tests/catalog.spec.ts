@@ -351,6 +351,18 @@ describe('hand-declared providers', () => {
     expect(() => buildProvider(spec)).toThrow(/cannot serve; supported protocols are/)
   })
 
+  it('rejects an unsupported model protocol before constructing the provider', () => {
+    const [model] = getBuiltinModels('deepseek')
+    if (model === undefined) throw new Error('the installed catalog ships no deepseek model')
+    expect(() => buildProvider({
+      provider: 'acme-gateway',
+      displayName: 'Acme Gateway',
+      api: 'openai-completions',
+      models: [{ ...model, api: 'quantum-telepathy' }],
+      namesCredential: true,
+    })).toThrow(/model with api "quantum-telepathy".*cannot serve/)
+  })
+
   it('delegates both stream methods from a static provider', () => {
     const [model] = getBuiltinModels('deepseek')
     if (model === undefined) throw new Error('the installed catalog ships no deepseek model')

@@ -5,6 +5,9 @@ import LlmRuntime, { createToolResultMessage, createUserMessage } from '@deepsee
 import type { Message } from '@deepseek-ai/dsh-llm'
 import * as LlmPiAi from '@deepseek-ai/dsh-llm-pi-ai'
 import * as DeepSeek from '@deepseek-ai/dsh-llm-deepseek-api-key'
+import { getBuiltinModels } from '@earendil-works/pi-ai/providers/all'
+import { normalizeContext } from '@earendil-works/pi-ai/utils/transcript'
+import { resolveProfiles } from '../src/config.ts'
 import { assemble } from './assemble.ts'
 import { anthropicFrame, closeMockServers, mockServer } from './mock-server.ts'
 
@@ -116,6 +119,42 @@ const pairs: { a: Api; b: Api | 'deepseek-messages' }[] = [
 ]
 
 describe('protocol history round trips', () => {
+  it('overrides one catalog model protocol while its sibling retains native dispatch', async () => {
+    vi.stubEnv('PROTOCOL_ROUNDTRIP_KEY', 'test-key')
+    const [target, sibling] = getBuiltinModels('deepseek')
+    if (target === undefined || sibling === undefined) throw new Error('deepseek needs two catalog models')
+    const server = await mockServer([
+      { events: frames('openai-responses') },
+      { events: frames('openai-completions') },
+      { events: frames('openai-responses') },
+    ])
+    const providers = { deepseek: {
+      apiKeyEnv: 'PROTOCOL_ROUNDTRIP_KEY',
+      baseURL: `${server.url}/v1`,
+      modelOverrides: { [target.id]: { api: 'openai-responses' } },
+    } }
+    const profile = resolveProfiles(providers).get('deepseek')
+    const provider = profile?.piProvider
+    const model = provider?.getModels().find(model => model.id === target.id)
+    if (provider === undefined || model === undefined) throw new Error('overridden catalog model is unavailable')
+    const direct = []
+    for await (const event of provider.stream(model, normalizeContext({ messages: [] }), { apiKey: 'test-key' })) {
+      direct.push(event)
+    }
+    expect(direct.at(-1)?.type).toBe('done')
+
+    const ctx = new Context()
+    contexts.push(ctx)
+    await ctx.plugin(LlmRuntime)
+    await ctx.plugin(LlmPiAi, { providers })
+    for (const model of [sibling.id, target.id]) {
+      const result = await assemble(ctx, { provider: 'deepseek', model, messages: [] })
+      expect(result.finish).toEqual({ kind: 'stop' })
+      expect(result.message.content).toEqual([{ type: 'text', text: 'reply' }])
+    }
+    expect(server.paths).toEqual(['/v1/responses', '/v1/chat/completions', '/v1/responses'])
+  })
+
   it.each(pairs)('$a → $b → $a preserves saved content and restores native replay', async ({ a, b }) => {
     vi.stubEnv('PROTOCOL_ROUNDTRIP_KEY', 'test-key')
     const source = await mockServer([{ events: frames(a, true) }, { events: frames(a) }, { events: frames(a) }])

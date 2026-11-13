@@ -13,6 +13,10 @@
     providers:
       moonshotai:
         apiKeyEnv: MOONSHOT_API_KEY
+        api: openai-responses
+        modelOverrides:
+          kimi-k3:
+            api: openai-completions
         baseURL: !!js process.env.DSH_SNAPSHOT_BASE_URL
         streamIdleTimeoutMs: 1000
 

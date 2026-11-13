@@ -6,6 +6,10 @@
     providers:
       moonshotai:
         apiKeyEnv: MOONSHOT_API_KEY
+        api: openai-responses
+        modelOverrides:
+          kimi-k3:
+            api: openai-completions
 
 - insert:
     - id: dynamic-tool-prompt-updates
